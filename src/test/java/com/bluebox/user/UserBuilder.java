@@ -18,4 +18,14 @@ class UserBuilder {
         user.setPassword(pass);
         return this;
     }
+
+    public UserBuilder firstName(String name) {
+        user.setFirstName(name);
+        return this;
+    }
+
+    public UserBuilder lastName(String lastName) {
+        user.setLastName(lastName);
+        return this;
+    }
 }

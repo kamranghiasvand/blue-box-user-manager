@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
             LOGGER.error("User cannot be null");
             throw new UserException("User cannot be null");
         }
-        Optional<UserEntity> current = findByEmail(user.getEmail());
+        var current = findByEmail(user.getEmail());
         if (current.isPresent()) {
             LOGGER.error("User already exists");
             throw new UserException("User already exists");

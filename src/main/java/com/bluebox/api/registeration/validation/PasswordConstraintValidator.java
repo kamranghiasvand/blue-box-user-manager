@@ -14,7 +14,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
     public boolean isValid(String password, ConstraintValidatorContext context) {
         if (!StringUtils.hasText(password))
             return true;
-        PasswordValidator validator = new PasswordValidator(Arrays.asList(
+        var validator = new PasswordValidator(Arrays.asList(
                 new LengthRule(8, 30),
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),
                 new CharacterRule(EnglishCharacterData.LowerCase, 1),
@@ -25,7 +25,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
                 new IllegalSequenceRule(EnglishSequenceData.USQwerty, 5, false),
                 new WhitespaceRule()));
 
-        RuleResult result = validator.validate(new PasswordData(password));
+        var result = validator.validate(new PasswordData(password));
         return result.isValid();
     }
 }

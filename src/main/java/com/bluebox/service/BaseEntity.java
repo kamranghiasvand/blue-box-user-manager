@@ -1,6 +1,7 @@
 package com.bluebox.service;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
@@ -11,17 +12,11 @@ import java.util.UUID;
 
 
 @Setter
+@Getter
 @ToString
 @EqualsAndHashCode(of = {"id", "uuid"})
 @MappedSuperclass
 public class BaseEntity {
-    private Long id;
-    private String uuid;
-    private Boolean deleted;
-    private Timestamp created;
-    private Timestamp lastUpdated;
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(
@@ -29,29 +24,15 @@ public class BaseEntity {
             strategy = "native"
     )
     @Column(name = "pk_id")
-    public Long getId() {
-        return id;
-    }
-
-    @Column(name = "deleted")
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
+    private Long id;
     @Column(name = "uuid", unique = true, nullable = false, updatable = false)
-    public String getUuid() {
-        return uuid;
-    }
-
+    private String uuid;
+    @Column(name = "deleted")
+    private Boolean deleted = false;
     @Column(name = "create_date", nullable = false)
-    public Timestamp getCreated() {
-        return created;
-    }
-
+    private Timestamp created;
     @Column(name = "last_update", nullable = false)
-    public Timestamp getLastUpdated() {
-        return lastUpdated;
-    }
+    private Timestamp lastUpdated;
 
     @PrePersist
     public void prePersist() {

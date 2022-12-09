@@ -3,6 +3,7 @@ package com.bluebox.service.user;
 
 import com.bluebox.service.BaseEntity;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -14,6 +15,7 @@ import javax.persistence.UniqueConstraint;
 import static com.bluebox.Constants.UNIQUE_USER_EMAIL;
 
 @Setter
+@Getter
 @ToString(callSuper = true, exclude = {"password"})
 @EqualsAndHashCode(callSuper = true, of = {})
 @Entity
@@ -21,40 +23,16 @@ import static com.bluebox.Constants.UNIQUE_USER_EMAIL;
         uniqueConstraints = @UniqueConstraint(name = UNIQUE_USER_EMAIL, columnNames = "email"))
 public class UserEntity extends BaseEntity {
 
-    private String firstName;
-    private String lastName;
-    private String phone;
-    protected String email;
-    private String password;
-    private boolean isEnabled = true;
-
     @Column(name = "first_name")
-    public String getFirstName() {
-        return firstName;
-    }
-
+    private String firstName;
     @Column(name = "last_name")
-    public String getLastName() {
-        return lastName;
-    }
-
-    @Column(name = "password")
-    public String getPassword() {
-        return password;
-    }
-
-    @Column(name = "enabled")
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
+    private String lastName;
     @Column(name = "phone")
-    public String getPhone() {
-        return phone;
-    }
-
+    private String phone;
     @Column(name = "email", nullable = false)
-    public String getEmail() {
-        return email;
-    }
+    protected String email;
+    @Column(name = "password")
+    private String password;
+    @Column(name = "enabled")
+    private Boolean enabled = false;
 }

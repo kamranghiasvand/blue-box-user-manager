@@ -18,7 +18,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.sql.Timestamp;
 
 import static com.bluebox.Constants.REGISTRATION_BASE;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -37,11 +36,11 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public RegistrationResp register(@RequestBody @Valid RegistrationController.RegistrationReq request) throws UserException {
+    public RegistrationResp register(@RequestBody @Valid RegistrationReq request) throws UserException {
         LOGGER.info("receiving a request for registration");
         LOGGER.info(request::toString);
-        UserEntity entity = reqToEntity(request);
-        UserEntity response = service.create(entity);
+        var entity = reqToEntity(request);
+        var response = service.create(entity);
         LOGGER.info(response::toString);
         return entityToResp(response);
     }
@@ -55,30 +54,30 @@ public class RegistrationController {
     }
 
     @Data
-    private static class RegistrationReq {
+    public static class RegistrationReq {
         @NotBlank(message = "firstName is required")
         private String firstName;
         @NotBlank(message = "lastName is required")
         private String lastName;
-        @Pattern(regexp = "''|^\\+(?:\\d.?){6,14}\\d$", message = "phone should be in international form")
+        @Pattern(regexp = "''|^\\+(?:\\d.?){6,14}\\d$", message = "international phone is required")
         private String phone;
-        @Email
+        @NotBlank(message = "email is required")
+        @Email(message = "valid email is required")
         protected String email;
         @ValidPassword
         private String password;
     }
 
     @Data
-    private static class RegistrationResp {
-        private Long id;
+    public static class RegistrationResp {
         private String uuid;
         private Boolean deleted;
-        private Timestamp created;
-        private Timestamp lastUpdated;
+        private Long created;
+        private Long lastUpdated;
         private String firstName;
         private String lastName;
         private String phone;
         protected String email;
-        private String password;
+        private Boolean enabled;
     }
 }
