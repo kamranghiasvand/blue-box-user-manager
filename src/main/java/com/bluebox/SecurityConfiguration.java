@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static com.bluebox.Constants.REGISTRATION_BASE;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -19,6 +21,8 @@ public class SecurityConfiguration {
         http
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers(REGISTRATION_BASE).permitAll()
+                .antMatchers(REGISTRATION_BASE+"/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

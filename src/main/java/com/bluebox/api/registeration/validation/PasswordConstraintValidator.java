@@ -1,6 +1,7 @@
 package com.bluebox.api.registeration.validation;
 
 import org.passay.*;
+import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -8,12 +9,11 @@ import java.util.Arrays;
 
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 
-    @Override
-    public void initialize(ValidPassword arg0) {
-    }
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
+        if (!StringUtils.hasText(password))
+            return true;
         PasswordValidator validator = new PasswordValidator(Arrays.asList(
                 new LengthRule(8, 30),
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),
