@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends BaseRepository<UserEntity> {
-    Optional<UserEntity> findByEmail(String email);
-    Optional<UserEntity> findByUuid(String uuid);
+public interface VerificationRepository extends BaseRepository<VerificationEntity> {
+    Optional<VerificationEntity> findByUserUidAndCode(String uid, String code);
 }

@@ -6,4 +6,6 @@ public interface UserService {
     UserEntity create(UserEntity entity) throws UserException;
 
     Optional<UserEntity> findByEmail(String email);
+
+    void verify(String uid, String code) throws UserException;
 }

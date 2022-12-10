@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 import static com.bluebox.Constants.UNIQUE_USER_EMAIL;
 
@@ -35,4 +32,9 @@ public class UserEntity extends BaseEntity {
     private String password;
     @Column(name = "enabled")
     private Boolean enabled = false;
+
+    @Transient
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

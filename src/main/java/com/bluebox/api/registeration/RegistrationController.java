@@ -9,10 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -20,6 +20,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 import static com.bluebox.Constants.REGISTRATION_BASE;
+import static com.bluebox.Constants.VERIFY;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -43,6 +44,12 @@ public class RegistrationController {
         var response = service.create(entity);
         LOGGER.info(response::toString);
         return entityToResp(response);
+    }
+
+    @GetMapping(path = VERIFY,consumes = MediaType.ALL_VALUE)
+    public ResponseEntity<String> verify(@RequestParam("code") String code, @RequestParam("uuid") String uuid) throws UserException {
+        service.verify(uuid, code);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private RegistrationResp entityToResp(UserEntity resp) {

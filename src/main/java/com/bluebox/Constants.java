@@ -6,4 +6,5 @@ public class Constants {
 
     public static final String UNIQUE_USER_EMAIL = "unique_user_email";
     public static final String REGISTRATION_BASE = "/api/user/registration";
+    public static final String VERIFY = "/verify";
 }
