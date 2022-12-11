@@ -1,20 +1,20 @@
 package com.bluebox.service;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.UUID;
 
 
 @Setter
 @Getter
 @ToString
-@EqualsAndHashCode(of = {"id", "uuid"})
 @MappedSuperclass
 public class BaseEntity {
     @Id
@@ -45,4 +45,16 @@ public class BaseEntity {
         lastUpdated = new Timestamp(System.currentTimeMillis());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        BaseEntity that = (BaseEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
