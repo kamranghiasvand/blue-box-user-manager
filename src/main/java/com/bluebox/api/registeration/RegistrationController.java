@@ -46,7 +46,7 @@ public class RegistrationController {
         return entityToResp(response);
     }
 
-    @GetMapping(path = VERIFY,consumes = MediaType.ALL_VALUE)
+    @GetMapping(path = VERIFY, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<String> verify(@RequestParam("code") String code, @RequestParam("uuid") String uuid) throws UserException {
         service.verify(uuid, code);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -71,7 +71,8 @@ public class RegistrationController {
         @NotBlank(message = "email is required")
         @Email(message = "valid email is required")
         protected String email;
-        @ValidPassword
+        @ValidPassword(message = "valid password is required")
+        @NotBlank(message = "password is required")
         private String password;
     }
 

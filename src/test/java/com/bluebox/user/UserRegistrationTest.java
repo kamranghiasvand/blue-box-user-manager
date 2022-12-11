@@ -169,6 +169,7 @@ class UserRegistrationTest {
         req.setFirstName("harry");
         req.setLastName("potter");
         req.setPhone("+4912345678901");
+        req.setPassword("P@ssW4rd");
         return req;
     }
 }

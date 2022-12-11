@@ -1,12 +1,16 @@
 package com.bluebox.service.user;
 
 import com.bluebox.AppConfig;
+import com.bluebox.security.UserDetailsImpl;
 import com.bluebox.service.mail.EmailException;
 import com.bluebox.service.mail.MailService;
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +22,8 @@ import static com.bluebox.Constants.VERIFY;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService {
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService, UserDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -26,15 +31,6 @@ public class UserServiceImpl implements UserService {
     private final AppConfig config;
     private final MailService mailService;
 
-    @Autowired
-    public UserServiceImpl(final UserRepository repo, final PasswordEncoder passEnc, final VerificationRepository vRepo,
-                           final AppConfig config, final MailService mService) {
-        this.repository = repo;
-        this.passwordEncoder = passEnc;
-        this.verificationRepository = vRepo;
-        this.config = config;
-        this.mailService = mService;
-    }
 
     @Override
     public UserEntity create(final UserEntity user) throws UserException {
@@ -64,6 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserEntity> findByEmail(final String email) {
+        LOGGER.info("Finding user by email: {}", email);
         return repository.findByEmail(email);
     }
 
@@ -119,5 +116,15 @@ public class UserServiceImpl implements UserService {
         entity.setUserUid(user.getUuid());
         LOGGER.info("Generated code for verification link : {}", entity.getCode());
         return verificationRepository.save(entity);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        var option = findByEmail(email);
+        if (option.isEmpty()) {
+            throw new UsernameNotFoundException("No user found with username: " + email);
+        }
+        var user = option.get();
+        return UserDetailsImpl.build(user);
     }
 }
