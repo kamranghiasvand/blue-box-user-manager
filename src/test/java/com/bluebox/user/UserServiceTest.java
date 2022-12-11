@@ -1,5 +1,6 @@
 package com.bluebox.user;
 
+import com.bluebox.service.mail.MailService;
 import com.bluebox.service.user.UserException;
 import com.bluebox.service.user.UserRepository;
 import com.bluebox.service.user.UserService;
@@ -7,8 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+
+import javax.validation.ConstraintViolationException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +23,8 @@ class UserServiceTest {
     private UserService service;
     @Autowired
     private UserRepository repository;
+    @MockBean
+    private MailService mailSender;
 
     @BeforeEach
     public void before() {
@@ -36,11 +41,8 @@ class UserServiceTest {
     @Test()
     void userWithoutEmail_shouldThrowException() {
         var user = new UserBuilder().build();
-        var exception = assertThrows(DataIntegrityViolationException.class, () -> service.create(user));
-        assertNotNull(exception.getCause());
-        var message = exception.getMessage();
-        assertNotNull(message);
-        assertTrue(message.contains("email"));
+        var exception = assertThrows(ConstraintViolationException.class, () -> service.create(user));
+        assertNotNull(exception);
     }
 
     @Test()

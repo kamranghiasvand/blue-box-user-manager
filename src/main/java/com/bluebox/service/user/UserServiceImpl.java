@@ -1,18 +1,16 @@
 package com.bluebox.service.user;
 
 import com.bluebox.AppConfig;
+import com.bluebox.service.mail.EmailException;
+import com.bluebox.service.mail.MailService;
 import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 import static com.bluebox.Constants.REGISTRATION_BASE;
@@ -26,16 +24,16 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final VerificationRepository verificationRepository;
     private final AppConfig config;
-    private final JavaMailSender mailSender;
+    private final MailService mailService;
 
     @Autowired
     public UserServiceImpl(final UserRepository repo, final PasswordEncoder passEnc, final VerificationRepository vRepo,
-                           final AppConfig config, final JavaMailSender mSender) {
+                           final AppConfig config, final MailService mService) {
         this.repository = repo;
         this.passwordEncoder = passEnc;
         this.verificationRepository = vRepo;
         this.config = config;
-        this.mailSender = mSender;
+        this.mailService = mService;
     }
 
     @Override
@@ -58,8 +56,8 @@ public class UserServiceImpl implements UserService {
         var entity = repository.save(user);
         try {
             sendVerificationCode(entity);
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new UserException("Failed to send email verification link");
+        } catch (EmailException e) {
+            throw new UserException("Failed to send email verification link", e);
         }
         return entity;
     }
@@ -90,7 +88,7 @@ public class UserServiceImpl implements UserService {
         repository.save(user);
     }
 
-    private void sendVerificationCode(UserEntity user) throws MessagingException, UnsupportedEncodingException {
+    private void sendVerificationCode(UserEntity user) throws EmailException {
         LOGGER.info("Sending a verification link for user: {}", user.getUuid());
         var code = generateCode(user);
         sendEmail(user, config.getAppUrl(), code);
@@ -98,9 +96,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void sendEmail(UserEntity user, String siteURL, VerificationEntity code)
-            throws MessagingException, UnsupportedEncodingException {
-        var toAddress = user.getEmail();
-        var fromAddress = config.getEmailAddress();
+            throws EmailException {
         var senderName = "Food Lovers";
         var subject = "Please verify your registration";
         var content = "Dear [[name]],<br>"
@@ -109,18 +105,11 @@ public class UserServiceImpl implements UserService {
                 + "Thank you,<br>"
                 + "Your Blue Box Team.";
 
-        var message = mailSender.createMimeMessage();
-        var helper = new MimeMessageHelper(message);
-
-        helper.setFrom(fromAddress, senderName);
-        helper.setTo(toAddress);
-        helper.setSubject(subject);
         content = content.replace("[[name]]", user.getFullName());
         var verifyURL = siteURL + REGISTRATION_BASE + VERIFY + "?code=" + code.getCode();
         verifyURL += "&uuid=" + user.getUuid();
         content = content.replace("[[URL]]", verifyURL);
-        helper.setText(content, true);
-        mailSender.send(message);
+        mailService.sendEmail(user.getEmail(), senderName, subject, content);
 
     }
 

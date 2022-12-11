@@ -14,8 +14,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             var fieldName = ((FieldError) error).getField();
@@ -26,8 +25,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<Map<String, String>> handleUserExceptions(
-            UserException ex) {
+    public ResponseEntity<Map<String, String>> handleUserExceptions(UserException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleExceptions(Exception ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);

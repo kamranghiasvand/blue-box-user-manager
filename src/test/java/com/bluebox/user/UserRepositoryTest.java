@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.validation.ConstraintViolationException;
+
 import static com.bluebox.Constants.UNIQUE_USER_EMAIL;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,12 +30,11 @@ class UserRepositoryTest {
     @Test()
     void createWithoutEmail_shouldThrowException() {
         var user = (new UserBuilder()).build();
-        var exception = assertThrows(DataIntegrityViolationException.class, () -> repository.save(user));
+        var exception = assertThrows(ConstraintViolationException.class, () -> repository.save(user));
         String message = exception.getMessage();
         assertNotNull(message);
         Assertions.assertTrue(message.contains("email"));
     }
-
     @Test()
     void createCorrectUser_shouldWork() {
         var user = (new UserBuilder()).email("test@email.com").build();
