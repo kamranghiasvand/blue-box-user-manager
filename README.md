@@ -8,7 +8,7 @@ Stateless application with capability to extend quickly in order to use in micro
 2. Set environment variable $JAVA_HOME to the path where Java has been installed
 3. Download and install maven from [Here](https://maven.apache.org/download.cgi)
 4. run `mvn clean package`
-## Creating Docker Image
+## Running as docker container
 1. Download and install Docker from [Here](https://www.docker.com/products/docker-desktop/)
 2. run `docker build -t user-manager .`
 3. run `docker run -p 8080:8080  user-manager`
