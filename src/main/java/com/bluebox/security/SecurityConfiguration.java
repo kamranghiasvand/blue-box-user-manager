@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,7 @@ public class SecurityConfiguration {
                 .antMatchers(REGISTRATION_BASE).permitAll()
                 .antMatchers(REGISTRATION_BASE + "/**").permitAll()
                 .antMatchers(AUTHENTICATION_BASE + "/**").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().permitAll();
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -64,4 +65,13 @@ public class SecurityConfiguration {
         return new AuthTokenFilter(jwtUtils, userService);
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web ->  web.ignoring().antMatchers("/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**");
+    }
 }
