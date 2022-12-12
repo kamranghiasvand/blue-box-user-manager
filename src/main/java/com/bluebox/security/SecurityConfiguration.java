@@ -38,7 +38,7 @@ public class SecurityConfiguration {
                 .antMatchers(REGISTRATION_BASE).permitAll()
                 .antMatchers(REGISTRATION_BASE + "/**").permitAll()
                 .antMatchers(AUTHENTICATION_BASE + "/**").permitAll()
-                .anyRequest().permitAll();
+                .anyRequest().authenticated();
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -67,11 +67,7 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web ->  web.ignoring().antMatchers("/v2/api-docs",
-                "/configuration/ui",
-                "/swagger-resources/**",
-                "/configuration/security",
-                "/swagger-ui.html",
-                "/webjars/**");
+        return web -> web.ignoring().antMatchers("/**/*api-docs*/**",
+                "/**/*swagger*/**");
     }
 }

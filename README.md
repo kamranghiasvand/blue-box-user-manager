@@ -12,4 +12,7 @@ Stateless application with capability to extend quickly in order to use in micro
 1. Download and install Docker from [Here](https://www.docker.com/products/docker-desktop/)
 2. run `docker build -t user-manager .`
 3. run `docker run -p 8080:8080  user-manager`
-  
+
+# Swagger UI
+you can see swagger documentation here:
+[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
