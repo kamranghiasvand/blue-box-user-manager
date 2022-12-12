@@ -1,10 +1,10 @@
 package com.bluebox.api.registeration;
 
-import com.bluebox.api.registeration.validation.ValidPassword;
+import com.bluebox.api.registeration.dto.RegistrationReq;
+import com.bluebox.api.registeration.dto.RegistrationResp;
 import com.bluebox.service.user.UserEntity;
 import com.bluebox.service.user.UserException;
 import com.bluebox.service.user.UserService;
-import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -15,9 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 import static com.bluebox.Constants.REGISTRATION_BASE;
 import static com.bluebox.Constants.VERIFY;
@@ -48,7 +45,7 @@ public class RegistrationController {
 
     @GetMapping(path = VERIFY, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<String> verify(@RequestParam("code") String code, @RequestParam("uuid") String uuid) throws UserException {
-        service.verify(uuid, code);
+        service.verifyEmail(uuid, code);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -60,32 +57,4 @@ public class RegistrationController {
         return mapper.map(dto, UserEntity.class);
     }
 
-    @Data
-    public static class RegistrationReq {
-        @NotBlank(message = "firstName is required")
-        private String firstName;
-        @NotBlank(message = "lastName is required")
-        private String lastName;
-        @Pattern(regexp = "''|^\\+(?:\\d.?){6,14}\\d$", message = "international phone is required")
-        private String phone;
-        @NotBlank(message = "email is required")
-        @Email(message = "valid email is required")
-        protected String email;
-        @ValidPassword(message = "valid password is required")
-        @NotBlank(message = "password is required")
-        private String password;
-    }
-
-    @Data
-    public static class RegistrationResp {
-        private String uuid;
-        private Boolean deleted;
-        private Long created;
-        private Long lastUpdated;
-        private String firstName;
-        private String lastName;
-        private String phone;
-        protected String email;
-        private Boolean enabled;
-    }
 }

@@ -7,5 +7,7 @@ public interface UserService {
 
     Optional<UserEntity> findByEmail(String email);
 
-    void verify(String uid, String code) throws UserException;
+    Optional<UserEntity> findById(Long id);
+
+    void verifyEmail(String uid, String code) throws UserException;
 }

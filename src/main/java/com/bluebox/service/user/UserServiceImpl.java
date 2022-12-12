@@ -65,7 +65,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void verify(String uid, String code) throws UserException {
+    public Optional<UserEntity> findById(final Long id) {
+        LOGGER.info("Finding user by id: {}", id);
+        return repository.findById(id);
+    }
+
+    @Override
+    public void verifyEmail(String uid, String code) throws UserException {
         LOGGER.info("Verifying user with code : {} and uuid: {}", code, uid);
         var userOpt = repository.findByUuid(uid);
         if (userOpt.isEmpty()) {
@@ -111,6 +117,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private VerificationEntity generateCode(UserEntity user) {
+        verificationRepository.deleteAllByUserUid(user.getUuid());
         var entity = new VerificationEntity();
         entity.setCode(RandomString.make(8));
         entity.setUserUid(user.getUuid());

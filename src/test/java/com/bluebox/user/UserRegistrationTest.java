@@ -1,6 +1,6 @@
 package com.bluebox.user;
 
-import com.bluebox.api.registeration.RegistrationController.RegistrationReq;
+import com.bluebox.api.registeration.dto.RegistrationReq;
 import com.bluebox.service.mail.EmailException;
 import com.bluebox.service.mail.MailService;
 import com.bluebox.service.user.UserRepository;

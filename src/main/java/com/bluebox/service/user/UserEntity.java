@@ -2,21 +2,18 @@ package com.bluebox.service.user;
 
 
 import com.bluebox.service.BaseEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-
 import java.util.Objects;
 
 import static com.bluebox.Constants.UNIQUE_USER_EMAIL;
 
-@Setter
-@Getter
+@Data
 @ToString(callSuper = true, exclude = {"password"})
 @Entity
 @Table(name = "tbl_user",
