@@ -1,6 +1,7 @@
 package com.bluebox.api;
 
 import com.bluebox.service.authentication.TokenRefreshException;
+import com.bluebox.service.mail.MailException;
 import com.bluebox.service.user.UserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<Map<String, String>> handleUserExceptions(UserException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put(ERROR, ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<Map<String, String>> handleUserExceptions(MailException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put(ERROR, ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);

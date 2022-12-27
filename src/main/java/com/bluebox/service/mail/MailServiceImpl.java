@@ -18,7 +18,7 @@ public final class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendEmail(String toAddress, String senderName, String subject, String content) throws EmailException {
+    public void send(String toAddress, String senderName, String subject, String content) throws MailException {
         try {
             var fromAddress = config.getEmailAddress();
             var message = mailSender.createMimeMessage();
@@ -29,8 +29,7 @@ public final class MailServiceImpl implements MailService {
             helper.setText(content, true);
             mailSender.send(message);
         } catch (Exception ex) {
-            throw new EmailException("Cannot send the email", ex);
+            throw new MailException("Cannot send the email", ex);
         }
-
     }
 }

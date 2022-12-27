@@ -11,4 +11,6 @@ public class AppConfig {
     private String appUrl;
     @Value("${spring.mail.username}")
     private String emailAddress;
+    @Value("${app.security.password.reset-url}")
+    private String resetPasswordUrl;
 }

@@ -1,7 +1,7 @@
 package com.bluebox.user;
 
 import com.bluebox.api.registeration.dto.RegistrationReq;
-import com.bluebox.service.mail.EmailException;
+import com.bluebox.service.mail.MailException;
 import com.bluebox.service.mail.MailService;
 import com.bluebox.service.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,9 +47,9 @@ class UserRegistrationTest {
 
 
     @BeforeEach
-    public void before() throws EmailException {
+    public void before() throws MailException {
         repository.deleteAll();
-        Mockito.doNothing().when(mailSender).sendEmail(lastMailToAdd.capture(), any(), any(), lastMailContent.capture());
+        Mockito.doNothing().when(mailSender).send(lastMailToAdd.capture(), any(), any(), lastMailContent.capture());
     }
 
 
@@ -120,8 +120,8 @@ class UserRegistrationTest {
                 .andExpect(status().isOk());
         var content = (lastMailContent.getValue());
         assertNotNull(content);
-        Pattern pattern = Pattern.compile("^.*href=\"([^\"]*)\".*$");
-        Matcher matcher = pattern.matcher(content);
+        var pattern = Pattern.compile("^.*href=\"([^\"]*)\".*$");
+        var matcher = pattern.matcher(content);
         assertTrue(matcher.find());
         var url = matcher.group(1);
         mockMvc.perform(get(url)).andExpect(status().isOk());
