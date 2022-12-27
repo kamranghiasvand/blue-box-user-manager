@@ -169,9 +169,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             LOGGER.error("Provided email ({}) is not equal to the user's email in DB.", email);
             throw new UserException("User is not found");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(password));
         repository.save(user);
         LOGGER.info("Password is changed");
+        removeResetPassToken(user);
     }
 
     private String generateRestPassToken(UserEntity user) {
