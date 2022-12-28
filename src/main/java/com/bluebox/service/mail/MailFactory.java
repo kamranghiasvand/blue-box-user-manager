@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import static com.bluebox.Constants.REGISTRATION_BASE;
+import static com.bluebox.Constants.VERIFY;
+
 @RequiredArgsConstructor
 @Service
 @Scope("prototype")
@@ -39,6 +42,12 @@ public class MailFactory {
         return (ResetPassMailTemplate) template;
     }
 
+    public EmailConfirmationTemplate confirmEmail() {
+        LOGGER.debug("Set template to reset password");
+        template = new EmailConfirmationTemplate(engine, this);
+        return (EmailConfirmationTemplate) template;
+    }
+
     public void send() throws MailException {
         if (template == null)
             throw new MailException("There is no template");
@@ -58,9 +67,8 @@ public class MailFactory {
             return this;
         }
 
-        protected MailTemplate withTemplate(final String templateName) {
+        protected void withTemplate(final String templateName) {
             this.templateName = templateName;
-            return this;
         }
 
         public MailFactory and() {
@@ -73,7 +81,7 @@ public class MailFactory {
     }
 
     public static class ResetPassMailTemplate extends MailTemplate {
-        public ResetPassMailTemplate(SpringTemplateEngine engine, MailFactory factory) {
+        public ResetPassMailTemplate(final SpringTemplateEngine engine, final MailFactory factory) {
             super(engine, factory);
             withTemplate("reset-pass-email");
         }
@@ -86,6 +94,22 @@ public class MailFactory {
 
         private String generateLink(final String token) {
             return factory.config.getResetPasswordUrl() + "?token=" + token;
+        }
+    }
+
+    public static class EmailConfirmationTemplate extends MailTemplate {
+
+        public EmailConfirmationTemplate(final SpringTemplateEngine engine, final MailFactory factory) {
+            super(engine, factory);
+            withTemplate("account-verification-email");
+        }
+
+        public EmailConfirmationTemplate withToken(final String userUid, final String token) {
+
+            var verifyURL = factory.config.getAppUrl() + REGISTRATION_BASE + VERIFY + "?code=" + token;
+            verifyURL += "&uuid=" + userUid;
+            super.withVariable("link", verifyURL);
+            return this;
         }
     }
 
