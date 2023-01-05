@@ -2,6 +2,7 @@ package com.bluebox.service.user;
 
 
 import com.bluebox.service.BaseEntity;
+import com.bluebox.service.role.RoleEntity;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.Hibernate;
@@ -9,6 +10,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.Objects;
 
 import static com.bluebox.Constants.UNIQUE_USER_EMAIL;
@@ -34,6 +36,14 @@ public class UserEntity extends BaseEntity {
     private String password;
     @Column(name = "enabled")
     private Boolean enabled = false;
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "pk_id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "pk_id"))
+    private Collection<RoleEntity> roles;
 
 
     @Transient

@@ -5,6 +5,7 @@ import com.bluebox.api.registeration.dto.RegistrationResp;
 import com.bluebox.service.user.UserEntity;
 import com.bluebox.service.user.UserException;
 import com.bluebox.service.user.UserService;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -28,33 +29,35 @@ public class RegistrationController {
     private final ModelMapper mapper;
 
     @Autowired
-    public RegistrationController(UserService service, ModelMapper mapper) {
+    public RegistrationController(final UserService service, final ModelMapper mapper) {
         this.service = service;
         this.mapper = mapper;
     }
 
     @PostMapping
-    public RegistrationResp register(@RequestBody @Valid RegistrationReq request) throws UserException {
+    public RegistrationResp register(@RequestBody @Valid final RegistrationReq request) throws UserException {
         LOGGER.info("receiving a request for registration");
         LOGGER.info(request::toString);
-        var entity = reqToEntity(request);
-        var response = service.create(entity);
+        final var entity = reqToEntity(request);
+        final var response = service.create(entity);
         LOGGER.info(response::toString);
         return entityToResp(response);
     }
 
     @GetMapping(path = VERIFY, consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<String> verify(@RequestParam("code") String code, @RequestParam("uuid") String uuid) throws UserException {
+    public ResponseEntity<String> verify(@RequestParam("code") final String code, @RequestParam("uuid") final String uuid) throws UserException {
         service.verifyEmail(uuid, code);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private RegistrationResp entityToResp(UserEntity resp) {
+    private RegistrationResp entityToResp(final UserEntity resp) {
         return mapper.map(resp, RegistrationResp.class);
     }
 
-    private UserEntity reqToEntity(RegistrationReq dto) {
-        return mapper.map(dto, UserEntity.class);
+    private UserEntity reqToEntity(final RegistrationReq dto) {
+        var entity= mapper.map(dto, UserEntity.class);
+        entity.setEmail( StringEscapeUtils.escapeHtml4(entity.getEmail()));
+        return entity;
     }
 
 }
