@@ -9,7 +9,7 @@ RUN mvn -B dependency:resolve dependency:resolve-plugins
 #Copy source code
 COPY src /build/src
 # Build application
-RUN mvn -DskipTests=true clean package
+RUN mvn clean package -DskipTests=true
 COPY target/user-manager-*.jar application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
