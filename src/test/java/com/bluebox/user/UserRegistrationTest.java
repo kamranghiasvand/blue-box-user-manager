@@ -56,7 +56,7 @@ class UserRegistrationTest {
     @SneakyThrows
     @Test
     void nullFirstName_shouldReturnError() {
-        var req = new RegistrationReq();
+        final var req = new RegistrationReq();
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(toJson(req)))
@@ -67,7 +67,7 @@ class UserRegistrationTest {
     @SneakyThrows
     @Test
     void nullLastName_shouldReturnError() {
-        var req = new RegistrationReq();
+        final var req = new RegistrationReq();
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(toJson(req)))
@@ -78,7 +78,7 @@ class UserRegistrationTest {
     @SneakyThrows
     @Test
     void invalidEmail_shouldReturnError() {
-        var req = new RegistrationReq();
+        final var req = new RegistrationReq();
         req.setEmail("invalid-email");
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
@@ -90,7 +90,7 @@ class UserRegistrationTest {
     @SneakyThrows
     @Test
     void invalidPhone_shouldReturnError() {
-        var req = new RegistrationReq();
+        final var req = new RegistrationReq();
         req.setPhone("871673523");
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
@@ -102,7 +102,7 @@ class UserRegistrationTest {
     @SneakyThrows
     @Test
     void correctUser_shouldReceiveEmail() {
-        var req = createUser();
+        final var req = createUser();
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(toJson(req)))
@@ -113,25 +113,27 @@ class UserRegistrationTest {
     @SneakyThrows
     @Test
     void correctUser_couldVerify() {
-        var req = createUser();
+        final var req = createUser();
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(toJson(req)))
                 .andExpect(status().isOk());
-        var content = (lastMailContent.getValue());
+        final var content = (lastMailContent.getValue());
         assertNotNull(content);
-        var pattern = Pattern.compile("^.*href=\"([^\"]*)\".*$");
-        var matcher = pattern.matcher(content);
+        final var pattern = Pattern.compile("^[\\s\\S.]*href=\"(.*)\\?code=(.{8}).*uuid=(.{36})\"[\\s\\S.]*$");
+        final var matcher = pattern.matcher(content);
         assertTrue(matcher.find());
-        var url = matcher.group(1);
-        mockMvc.perform(get(url)).andExpect(status().isOk());
+        final var url = matcher.group(1);
+        final var token=matcher.group(2);
+        final var uuid=matcher.group(3);
+        mockMvc.perform(get(url).param("code",token).param("uuid",uuid)).andExpect(status().isOk());
     }
 
 
     @SneakyThrows
     @Test
     void correctUser_shouldWork() {
-        var req = createUser();
+        final var req = createUser();
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(toJson(req)))
@@ -149,7 +151,7 @@ class UserRegistrationTest {
     @Test
     void duplicateUser_shouldReturnError() {
         repository.save(new UserBuilder().email("harry-potter@hagwartz.com").firstName("harry").lastName("potter").build());
-        var req = createUser();
+        final var req = createUser();
         mockMvc.perform(post(REGISTRATION_BASE)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(toJson(req)))
@@ -158,13 +160,13 @@ class UserRegistrationTest {
     }
 
     @SneakyThrows
-    private String toJson(RegistrationReq req) {
+    private String toJson(final RegistrationReq req) {
         return new ObjectMapper().writeValueAsString(req);
     }
 
     @NotNull
     private static RegistrationReq createUser() {
-        var req = new RegistrationReq();
+        final var req = new RegistrationReq();
         req.setEmail("harry-potter@hagwartz.com");
         req.setFirstName("harry");
         req.setLastName("potter");
